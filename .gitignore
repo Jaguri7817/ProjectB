@@ -1,0 +1,61 @@
+# Unreal Engine generated files
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+.vs/
+.vscode/
+.idea/
+
+# Build outputs / packaged builds
+Build/
+Dist/
+Releases/
+PackagedBuilds/
+
+# Visual Studio / IDE files
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.user
+*.userosscache
+*.sln.DotSettings.user
+
+# Unreal temporary files
+*.tmp
+*.log
+*.cache
+*.pdb
+*.obj
+*.ilk
+*.exp
+*.lib
+*.dll
+*.exe
+
+# Unreal asset files - ignore game/editor assets
+Content/
+*.uasset
+*.umap
+
+# Optional: ignore marketplace/local plugins binaries
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+Plugins/*/Saved/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Keep project/source/config files
+!*.uproject
+!Source/
+!Source/**
+!Config/
+!Config/**
+!Plugins/
+!Plugins/**/Source/
+!Plugins/**/Source/**
