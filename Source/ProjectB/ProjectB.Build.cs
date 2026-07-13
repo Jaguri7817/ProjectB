@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
+using UnrealBuildTool.Rules;
 
 public class ProjectB : ModuleRules
 {
@@ -18,10 +19,15 @@ public class ProjectB : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
-		});
+			"Slate",
+            "GameplayAbilities",
+            "GameplayTasks",
+            "GameplayTags"
+        });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] {
+            
+        });
 
 		PublicIncludePaths.AddRange(new string[] {
 			"ProjectB",
