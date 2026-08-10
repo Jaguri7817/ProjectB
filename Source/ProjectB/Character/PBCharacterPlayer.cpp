@@ -11,6 +11,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "InputActionValue.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
 
 APBCharacterPlayer::APBCharacterPlayer()
 {
@@ -29,6 +32,22 @@ APBCharacterPlayer::APBCharacterPlayer()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerFollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	// Set size for collision capsule
+	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+
+	// Configure character movement
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
+
+	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
+	// instead of recompiling to adjust them
+	GetCharacterMovement()->JumpZVelocity = 500.f;
+	GetCharacterMovement()->AirControl = 0.35f;
+	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
+	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -49,13 +68,14 @@ void APBCharacterPlayer::PossessedBy(AController* NewController)
     {
         ASC = PBCharacterPS->GetAbilitySystemComponent();
         ASC->InitAbilityActorInfo(PBCharacterPS, this);
-    }
 
-    const UPBCharacterAttributeSet* PBCharacterAS = ASC->GetSet<UPBCharacterAttributeSet>();
-    if (PBCharacterAS)
-    {
-        // 어트리뷰트 세팅
-    }
+		const UPBCharacterAttributeSet* PBCharacterAS = ASC->GetSet<UPBCharacterAttributeSet>();
+		if (PBCharacterAS)
+		{
+			// 어트리뷰트 델리게이트 세팅
+
+		}
+    }    
 
 }
 
