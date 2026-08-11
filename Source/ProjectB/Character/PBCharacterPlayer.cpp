@@ -13,7 +13,8 @@
 #include "InputActionValue.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
+#include "Input/GasInputActionDataAsset.h"
+#include "InputAction.h"
 
 APBCharacterPlayer::APBCharacterPlayer()
 {
@@ -63,20 +64,29 @@ void APBCharacterPlayer::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
 
-    APBCharacterPlayerState* PBCharacterPS = GetPlayerState<APBCharacterPlayerState>();
-    if (PBCharacterPS)
-    {
-        ASC = PBCharacterPS->GetAbilitySystemComponent();
-        ASC->InitAbilityActorInfo(PBCharacterPS, this);
+	InitAbilitySystem();
 
-		const UPBCharacterAttributeSet* PBCharacterAS = ASC->GetSet<UPBCharacterAttributeSet>();
-		if (PBCharacterAS)
-		{
-			// 어트리뷰트 델리게이트 세팅
+	const UPBCharacterAttributeSet* PBCharacterAS = ASC->GetSet<UPBCharacterAttributeSet>();
+	if (PBCharacterAS)
+	{
+		// 어트리뷰트 델리게이트 세팅
 
-		}
-    }    
+	}
 
+	for (const auto& Ability : Abilities)
+	{
+		FGameplayAbilitySpec AbilitySpec(Ability);
+		ASC->GiveAbility(AbilitySpec);
+	}
+
+	for (const auto& InputAbility : InputAbilities)
+	{
+		FGameplayAbilitySpec InputSpec(InputAbility.Value);
+
+		InputSpec.InputID = static_cast<int32>(InputAbility.Key);
+
+		ASC->GiveAbility(InputSpec);
+	}
 }
 
 void APBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -95,20 +105,100 @@ void APBCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 
         // Looking
         EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APBCharacterPlayer::Look);
-    }
 
-    SetupGASPlayerInputComponent();
+		// Gas Input Setting
+		SetupGASPlayerInputComponent(EnhancedInputComponent);
+    }    
 }
 
-void APBCharacterPlayer::SetupGASPlayerInputComponent()
+void APBCharacterPlayer::SetupGASPlayerInputComponent(UEnhancedInputComponent* EnhancedInputComponent)
 {
-    if (IsValid(ASC) && IsValid(InputComponent))
-    {
-        // GAS 시스템 전용 입력 바인드
-        UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(InputComponent);
+	check(InputConfig);
 
+	// GAS 시스템 전용 입력 바인드
+	for (const auto& AbilityInput : InputConfig->AbilityInputActions)
+	{
+		if (!IsValid(AbilityInput.InputAction))
+		{
+			continue;
+		}
+		if (AbilityInput.InputID == EAbilityInputID::None)
+		{
+			continue;
+		}
 
-    }
+		EnhancedInputComponent->BindAction(AbilityInput.InputAction, ETriggerEvent::Started, this, &APBCharacterPlayer::AbilityInputPressed, AbilityInput.InputID);
+		EnhancedInputComponent->BindAction(AbilityInput.InputAction, ETriggerEvent::Completed, this, &APBCharacterPlayer::AbilityInputReleased, AbilityInput.InputID);
+	}
+}
+
+void APBCharacterPlayer::AbilityInputPressed(EAbilityInputID InputID)
+{
+	if (!IsValid(ASC))
+	{
+		return;
+	}
+
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(static_cast<int32>(InputID));
+
+	if (!Spec)
+	{
+		return;
+	}
+
+	Spec->InputPressed = true;
+
+	if (Spec->IsActive())
+	{
+		ASC->AbilitySpecInputPressed(*Spec);
+	}
+	else
+	{
+		ASC->TryActivateAbility(Spec->Handle);
+	}
+}
+
+void APBCharacterPlayer::AbilityInputReleased(EAbilityInputID InputID)
+{
+	if (!IsValid(ASC))
+	{
+		return;
+	}
+
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromInputID(static_cast<int32>(InputID));
+
+	if (!Spec)
+	{
+		return;
+	}
+
+	Spec->InputPressed = false;
+
+	if (Spec->IsActive())
+	{
+		ASC->AbilitySpecInputReleased(*Spec);
+	}
+}
+
+void APBCharacterPlayer::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitAbilitySystem();
+}
+
+void APBCharacterPlayer::InitAbilitySystem()
+{
+	APBCharacterPlayerState* PBCharacterPS = GetPlayerState<APBCharacterPlayerState>();
+	if (PBCharacterPS)
+	{
+		ASC = PBCharacterPS->GetAbilitySystemComponent();
+
+		if (ASC)
+		{
+			ASC->InitAbilityActorInfo(PBCharacterPS, this);
+		}
+	}
 }
 
 void APBCharacterPlayer::Move(const FInputActionValue& Value)

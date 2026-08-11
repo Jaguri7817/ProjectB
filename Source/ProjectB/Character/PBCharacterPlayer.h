@@ -6,12 +6,15 @@
 #include "Character/PBCharacterBase.h"
 #include "AbilitySystemInterface.h"
 //#include "Abilities/GameplayAbilityTypes.h"
+#include "Input/AbilityInputID.h"
 #include "PBCharacterPlayer.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
 struct FInputActionValue;
+class UGasInputActionDataAsset;
+class UEnhancedInputcomponent;
 
 /**
  * 
@@ -90,10 +93,25 @@ public:
 
 
 protected:
-	void SetupGASPlayerInputComponent();
+	void SetupGASPlayerInputComponent(UEnhancedInputComponent* EnhancedInputComponent);
+
+	void AbilityInputPressed(EAbilityInputID InputID);
+	void AbilityInputReleased(EAbilityInputID InputID);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input", meta = (AllowPriavteAccess = "true"))
+	TObjectPtr<UGasInputActionDataAsset> InputConfig;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TObjectPtr<class UAbilitySystemComponent> ASC;
+
+	virtual void OnRep_PlayerState() override;
+	void InitAbilitySystem();
+
+	UPROPERTY(EditAnywhere, Category = "GAS|Ability")
+	TArray<TSubclassOf<class UGameplayAbility>> Abilities;
+
+	UPROPERTY(EditAnywhere, Category = "GAS|Input Ability")
+	TMap<EAbilityInputID, TSubclassOf<class UGameplayAbility>> InputAbilities;
 
 };
