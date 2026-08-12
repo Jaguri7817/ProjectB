@@ -150,7 +150,9 @@ void APBCharacterPlayer::AbilityInputPressed(EAbilityInputID InputID)
 
 	if (Spec->IsActive())
 	{
-		ASC->AbilitySpecInputPressed(*Spec);
+		UE_LOG(LogTemp, Warning, TEXT("Active Ability Second Input"));
+		//ASC->AbilitySpecInputPressed(*Spec);				// GAS 입력 처리 파이프라인의 한 단계만 직접 호출
+		ASC->PressInputID(static_cast<int32>(InputID));		// ASC에게 InputID만 준 뒤, ASC가 알아서 입력 처리하도록
 	}
 	else
 	{
@@ -176,7 +178,8 @@ void APBCharacterPlayer::AbilityInputReleased(EAbilityInputID InputID)
 
 	if (Spec->IsActive())
 	{
-		ASC->AbilitySpecInputReleased(*Spec);
+		//ASC->AbilitySpecInputReleased(*Spec);
+		ASC->ReleaseInputID(static_cast<int32>(InputID));
 	}
 }
 

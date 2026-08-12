@@ -12,6 +12,10 @@
 // Animation
 #include "Animation/AnimMontage.h"
 
+// Character Movement Controll
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Character.h"
+
 
 UPBGA_Attack::UPBGA_Attack()
 {
@@ -23,14 +27,16 @@ void UPBGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	// 공격 상태 초기화
-	CurrentCombo = 0;
-	bNextComboInput = false;
-
 	if (!ComboMontage)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 		return;
+	}
+
+	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
+	if (Character)
+	{
+		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_None);
 	}
 
 	StartCombo();
@@ -38,8 +44,15 @@ void UPBGA_Attack::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 void UPBGA_Attack::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	// 공격 상태 초기화
 	CurrentCombo = 0;
 	bNextComboInput = false;
+
+	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get());
+	if (Character)
+	{
+		Character->GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -94,7 +107,7 @@ void UPBGA_Attack::WaitComboInput()
 	{
 		return;
 	}
-
+	UE_LOG(LogTemp, Warning, TEXT("Wait Combo Input"));
 	UAbilityTask_WaitInputPress* InputTask = UAbilityTask_WaitInputPress::WaitInputPress(this, false);
 
 	InputTask->OnPress.AddDynamic(this, &UPBGA_Attack::OnComboInputPressed);
@@ -117,7 +130,6 @@ void UPBGA_Attack::ComboCheck()
 	++CurrentCombo;
 
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-
 	if (!ASC)
 	{
 		return;
@@ -143,6 +155,7 @@ void UPBGA_Attack::PerformAttackHitCheck(const FGameplayEventData& Payload)
 
 void UPBGA_Attack::OnComboInputPressed(float TimeWited)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Combo Input Pressed"));
 	bNextComboInput = true;
 }
 
@@ -158,6 +171,7 @@ void UPBGA_Attack::OnMontageCancelled()
 
 void UPBGA_Attack::OnComboCheckEvent(FGameplayEventData Payload)
 {
+	UE_LOG(LogTemp, Warning, TEXT("ComboCheck Event / NextInput = %s"), bNextComboInput ? TEXT("true") : TEXT("false"));
 	ComboCheck();
 }
 
