@@ -8,6 +8,7 @@
 #include "Abilities/Tasks/AbilityTask_WaitInputPress.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
+#include "Abilities/Tasks/AbilityTask_WaitTargetData.h"
 
 // Animation
 #include "Animation/AnimMontage.h"
@@ -148,9 +149,43 @@ FName UPBGA_Attack::GetComboSectionName() const
 
 void UPBGA_Attack::PerformAttackHitCheck(const FGameplayEventData& Payload)
 {
-	// -------------------------------------
-	//  TODO: 공격판정 | Trace -> TargetData 생성 -> GameplayEffect 적용
-	// -------------------------------------
+	UE_LOG(LogTemp, Warning, TEXT("Perform Attack Hit Checking"));
+
+	if (!TargetActorClass)
+	{
+		return;
+	}
+
+	UAbilityTask_WaitTargetData* TargetDataTask =
+		UAbilityTask_WaitTargetData::WaitTargetData(
+			this,
+			TEXT("MeleeAttackTargeting"),
+			EGameplayTargetingConfirmation::Instant,
+			TargetActorClass
+		);
+
+	if (!TargetDataTask)
+	{
+		return;
+	}
+
+	TargetDataTask->ValidData.AddDynamic(this, &UPBGA_Attack::OnTargetDataReady);
+
+
+	AGameplayAbilityTargetActor* SpawnedTargetActor = nullptr;
+	if (TargetDataTask->BeginSpawningActor(this, TargetActorClass, SpawnedTargetActor))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TargetActor Spawn Begin: %s"), *GetNameSafe(SpawnedTargetActor));
+
+		TargetDataTask->FinishSpawningActor(this, SpawnedTargetActor);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Begin Spawning Actor Failed"));
+	}
+
+
+	TargetDataTask->ReadyForActivation();
 }
 
 void UPBGA_Attack::OnComboInputPressed(float TimeWited)
@@ -178,4 +213,36 @@ void UPBGA_Attack::OnComboCheckEvent(FGameplayEventData Payload)
 void UPBGA_Attack::OnAttackHitEvent(FGameplayEventData Payload)
 {
 	PerformAttackHitCheck(Payload);
+}
+
+void UPBGA_Attack::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
+{
+	UE_LOG(LogTemp, Log, TEXT("[CallBack] Perform Attack Hit Check"));
+
+	for (int32 DataIndex = 0; DataIndex < TargetData.Num(); ++DataIndex)
+	{
+		const FGameplayAbilityTargetData* Data = TargetData.Get(DataIndex);
+
+		if (!Data)
+		{
+			continue;
+		}
+
+		const TArray<TWeakObjectPtr<AActor>> TargetActors = Data->GetActors();
+
+		for (const TWeakObjectPtr<AActor>& TargetActorPtr : TargetActors)
+		{
+			AActor* TargetActor = TargetActorPtr.Get();
+
+			if (!IsValid(TargetActor))
+			{
+				continue;
+			}
+
+			UE_LOG(LogTemp, Log, TEXT("Attack Hit: %s"), *TargetActor->GetName());
+		}
+		// -------------------------------------
+		// TODO: TargetActor에게 데미지 이펙트 적용
+		// -------------------------------------
+	}
 }

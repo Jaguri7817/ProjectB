@@ -59,6 +59,10 @@ private:
 
 	void PerformAttackHitCheck(const FGameplayEventData& Payload);
 
+	UPROPERTY(EditAnywhere, Category = "Attack|Targeting")
+	TSubclassOf<class AGameplayAbilityTargetActor> TargetActorClass;
+
+
 private:
 	// -------------------------------------
 	//  AbilityTask Callback
@@ -77,5 +81,8 @@ private:
 
 	UFUNCTION()
 	void OnAttackHitEvent(FGameplayEventData Payload);
+
+	UFUNCTION()
+	void OnTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
 };
 
