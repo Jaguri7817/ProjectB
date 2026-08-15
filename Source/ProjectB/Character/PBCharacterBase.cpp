@@ -14,6 +14,11 @@ APBCharacterBase::APBCharacterBase()
 
 }
 
+void APBCharacterBase::Die()
+{
+	SetDead();
+}
+
 // Called when the game starts or when spawned
 void APBCharacterBase::BeginPlay()
 {

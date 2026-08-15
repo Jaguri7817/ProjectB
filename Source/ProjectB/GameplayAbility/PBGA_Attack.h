@@ -62,11 +62,17 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Attack|Targeting")
 	TSubclassOf<class AGameplayAbilityTargetActor> TargetActorClass;
 
+	UPROPERTY(EditAnywhere, Category = "Attack|Damage")
+	TSubclassOf<class UGameplayEffect> AttackDamageEffect;
 
-private:
+	int32 CurrentLevel;
+
+
 	// -------------------------------------
 	//  AbilityTask Callback
 	// -------------------------------------
+private:
+
 	UFUNCTION()
 	void OnComboInputPressed(float TimeWited);
 	

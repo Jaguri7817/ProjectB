@@ -14,14 +14,22 @@ class PROJECTB_API APBCharacterBase : public ACharacter
 public:
 	APBCharacterBase();
 
+public:
+	void Die();
+	inline UAnimMontage* GetDeadMontage() const {  return DeadMontage;	};
+
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void SetDead();
 
-	void SetDead();
+	virtual void SpawnCharacter();
 
-	void SpawnCharacter();
-
+	// -------------------------------------
+	//  Montge
+	// -------------------------------------
+	UPROPERTY(EditAnywhere, Category = "Dead")
+	TObjectPtr<UAnimMontage> DeadMontage;
 
 	
 };

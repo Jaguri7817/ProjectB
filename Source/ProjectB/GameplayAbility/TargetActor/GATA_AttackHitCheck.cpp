@@ -195,7 +195,7 @@ FVector AGATA_AttackHitCheck::GetAttackBoxCenter() const
 	const FVector SourceLocation = SourceActor->GetActorLocation();
 	const FVector Forward = SourceActor->GetActorForwardVector();
 
-	// Box의 중심을 공격 거리의 절반맠늠 앞으로 옮긴다.
+	// Box의 중심을 공격 거리의 절반만큼 앞으로 옮긴다.
 	// 따라서 Box는 캐릭터 위치로부터 AttackRange만큼 전방으로 생긴다.
 	return SourceLocation + Forward * (AttackRange * 0.5f) + FVector::UpVector * HeightOffset;
 }

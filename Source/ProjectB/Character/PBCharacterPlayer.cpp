@@ -15,6 +15,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Input/GasInputActionDataAsset.h"
 #include "InputAction.h"
+#include "Tag/PBGameplayTag.h"
 
 APBCharacterPlayer::APBCharacterPlayer()
 {
@@ -202,6 +203,36 @@ void APBCharacterPlayer::InitAbilitySystem()
 			ASC->InitAbilityActorInfo(PBCharacterPS, this);
 		}
 	}
+}
+
+void APBCharacterPlayer::SetDead()
+{
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+
+	
+}
+
+void APBCharacterPlayer::SpawnCharacter()
+{
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(true);
+
+	GetCharacterMovement()->SetMovementMode(EMovementMode::MOVE_Walking);
+
+	ASC->RemoveLooseGameplayTag(TAG_State_Dead);
+
+	const UPBCharacterAttributeSet* AttributeSet = ASC->GetSet<UPBCharacterAttributeSet>();
+	if (!AttributeSet)
+	{
+		return;
+	}
+
+	// 어트리뷰트셋에 직접 접근하여 HP값을 수정하는게 껄끄럽긴 하지만
+	// 이것마저 GA, GE를 써서 만들면 코드 양이 더 많아지기 때문에 
+	// 트레이드 오프
+	ASC->SetNumericAttributeBase(UPBCharacterAttributeSet::GetHPAttribute(), AttributeSet->GetMaxHP());
+	
 }
 
 void APBCharacterPlayer::Move(const FInputActionValue& Value)

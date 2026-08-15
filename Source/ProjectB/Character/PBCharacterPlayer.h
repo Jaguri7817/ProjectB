@@ -114,4 +114,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GAS|Input Ability")
 	TMap<EAbilityInputID, TSubclassOf<class UGameplayAbility>> InputAbilities;
 
+private:
+	virtual void SetDead() override;
+	virtual void SpawnCharacter() override;
 };

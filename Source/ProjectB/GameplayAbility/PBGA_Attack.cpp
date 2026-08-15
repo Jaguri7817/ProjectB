@@ -17,7 +17,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Character.h"
 
-
 UPBGA_Attack::UPBGA_Attack()
 {
 	// 인스턴스 재사용
@@ -242,7 +241,15 @@ void UPBGA_Attack::OnTargetDataReady(const FGameplayAbilityTargetDataHandle& Tar
 			UE_LOG(LogTemp, Log, TEXT("Attack Hit: %s"), *TargetActor->GetName());
 		}
 		// -------------------------------------
-		// TODO: TargetActor에게 데미지 이펙트 적용
+		// TargetActor에게 데미지 이펙트 적용
 		// -------------------------------------
+		FGameplayEffectSpecHandle EffectSpecHandle = MakeOutgoingGameplayEffectSpec(AttackDamageEffect, GetAbilityLevel());
+		if (!EffectSpecHandle.IsValid())
+		{
+			return;
+		}
+		
+		ApplyGameplayEffectSpecToTarget(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, EffectSpecHandle, TargetData);
+
 	}
 }

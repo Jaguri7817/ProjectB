@@ -1,0 +1,6 @@
+#pragma once
+
+#include "NativeGameplayTags.h"
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Character_Death);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_Dead);
