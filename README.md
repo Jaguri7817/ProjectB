@@ -74,3 +74,9 @@ Project B는 Unreal GAS 프레임워크를 탑재하여 [Chronicle Gate](https:/
 
    - 생성된 타겟 데이터를 가지고 피격자 액터를 추출해 Gameplay Effect를 적용합니다.
 
+- [사망 처리](https://github.com/Jaguri7817/ProjectB/blob/main/Source/ProjectB/Attribute/PBCharacterAttributeSet.cpp#L38)
+- [사망 GA 발동](https://github.com/Jaguri7817/ProjectB/blob/main/Source/ProjectB/GameplayAbility/PBGA_Death.cpp)
+  - 데미지 Gameplay Effect를 적용한 후, 적용된 액터의 HP가 0 이하로 떨어지게 되면 사망 이벤트를 발생시킵니다.
+  - 사망 GA에서는 사망 이벤트를 트리거로 하여 액터의 사망 GA를 발동합니다.
+ 
+
