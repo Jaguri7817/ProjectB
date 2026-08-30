@@ -57,4 +57,6 @@ Project B는 Unreal GAS 프레임워크를 탑재하여 Chronicle Gate의 전투
 
    생성된 타겟 데이터를 가지고 데미지를 처리합니다.
 
-!ProjectB_데모영상 (1).gif.gif)
+<p align="center">
+<img src = "<img width="400" height="217" alt="Image" src="https://github.com/user-attachments/assets/5e0492c4-4f25-4bde-a027-1aa5bef4d333" />">
+</p>
