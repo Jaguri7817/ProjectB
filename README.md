@@ -4,7 +4,7 @@
 ## 프로젝트 소개
 
 
-Project B는 Unreal GAS 프레임워크를 탑재하여 Chronicle Gate의 전투 시스템을 개선하고, 재사용성과 확장성을 더해 유기적인 전투 메커니즘 구현을 목표로 하는 개인 프로젝트입니다.
+Project B는 Unreal GAS 프레임워크를 탑재하여 [Chronicle Gate](https://github.com/Jaguri7817/ChronicleGate_Code_Public)의 전투 시스템을 개선하고, 재사용성과 확장성을 더해 유기적인 전투 메커니즘 구현을 목표로 하는 개인 프로젝트입니다.
 
 기본 시스템 동작 설계는 C++로 구현하고, 세부 설정 및 데이터 설정은 Blueprint에서 설정하도록 구현했습니다.
 
@@ -14,6 +14,20 @@ Project B는 Unreal GAS 프레임워크를 탑재하여 Chronicle Gate의 전투
 - 프로젝트 명: Project B
 - 기간: 2026.07.~(진행 중)
 - 진행 상태: GAS 기반 기본적인 전투 파이프라인 구축 (입력 → 콤보 공격 → 타겟 판정 → 데미지 처리 → 사망 처리)
+- [Chronicle Gate](https://github.com/Jaguri7817/ChronicleGate_Code_Public) 대비 개선점
+<div align="center">
+
+| 차이 | *Chronicle Gate* | *Project B* |
+| :---: | :---: | :---: |
+| 전투 시스템 | Character 클래스 중심 구현 | GAS 기반 시스템 |
+| 입력 처리 | Character 클래스 내 직접 입력 처리 | 데이터 기반 Ability 입력 시스템 |
+| 스탯 관리 | Actor Component로 관리 | Attribute Set으로 관리 |
+| 상태 관리 | bool 변수 + 타이머 기반 | Gameplay Tag |
+| 공격 처리 | Character 함수 호출 | Ability 발동 |
+| 확장성 | Character 클래스 수정 필요 | Ability 추가만으로 확장 |
+| 책임 분리 | Character 클래스에 의존 | ASC / GA / GE / AT |
+
+</div>
 
 ## 기술 스택
 
@@ -58,5 +72,5 @@ Project B는 Unreal GAS 프레임워크를 탑재하여 Chronicle Gate의 전투
 
 - [데미지 처리 흐름](https://github.com/Jaguri7817/ProjectB/blob/main/Source/ProjectB/GameplayAbility/PBGA_Attack.cpp#L149)
 
-   - 생성된 타겟 데이터를 가지고 데미지를 처리합니다.
+   - 생성된 타겟 데이터를 가지고 피격자 액터를 추출해 Gameplay Effect를 적용합니다.
 
