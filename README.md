@@ -12,7 +12,7 @@ Project B는 Unreal GAS 프레임워크를 탑재하여 [Chronicle Gate](https:/
 
 
 - 프로젝트 명: Project B
-- 기간: 2026.07.~(진행 중)
+- 기간: 2026.07.~2026.08.
 - 진행 상태: GAS 기반 기본적인 전투 파이프라인 구축 (입력 → 콤보 공격 → 타겟 판정 → 데미지 처리 → 사망 처리)
 - [Chronicle Gate](https://github.com/Jaguri7817/ChronicleGate_Code_Public) 대비 개선점
 <div align="center">
